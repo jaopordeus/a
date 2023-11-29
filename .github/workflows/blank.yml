@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materiais da Casa H&J</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue:wght@400&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <style>
+        body{font-family:Tahoma,sans-serif;background-color:#f2f2f2;margin:0;padding:0;color:#333}
+        .container{max-width:600px;margin:50px auto;background-color:#fff;padding:20px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
+        h1{text-align:center;color:#007acc}
+        form{margin-bottom:20px}
+        label{display:block;margin-bottom:8px;color:#333}
+        input{width:100%;padding:8px;margin-bottom:15px;box-sizing:border-box}
+        button{font-family:Tahoma,sans-serif;background-color:#007acc;color:#fff;padding:10px;border:none;border-radius:5px;cursor:pointer}
+        button:hover{background-color:#005e99}
+        h2{text-align:center;color:#333}
+        ul{list-style-type:none;padding:0}
+        li{margin-bottom:8px;padding:8px;background-color:#eee;border-radius:5px;color:#333}
+        p#totalValue{text-align:center;color:#333}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Materiais da Casa H&J</h1>
+        <form id="materialForm">
+            <label for="materialName">Nome do Material:</label>
+            <input type="text" id="materialName" required>
+
+            <label for="materialQuantity">Quantidade:</label>
+            <input type="number" id="materialQuantity" required>
+
+            <label for="materialTotalValue">Valor Total:</label>
+            <input type="number" id="materialTotalValue" required>
+
+            <button type="button" onclick="addMaterial()">Adicionar Material</button>
+        </form>
+
+        <div id="materialList">
+            <h2>Materiais Adicionados:</h2>
+            <ul id="list"></ul>
+            <p id="totalValue">Valor Total: R$ 0,00</p>
+        </div>
+    </div>
+
+    <script>
+        function addMaterial() {
+            var a=document.getElementById('materialName').value,b=document.getElementById('materialQuantity').value,c=document.getElementById('materialTotalValue').value;if(''===a||''===b||''===c)return void alert('Por favor, preencha todos os campos');var d=document.createElement('li');d.innerHTML=a+': '+b+' unidades - Valor Total: R$'+c+' <button onclick="deleteMaterial(this)">Excluir</button>',document.getElementById('list').appendChild(d),saveMaterial(a,b,c),document.getElementById('materialForm').reset(),updateTotalValue()
+        }
+
+        function deleteMaterial(a) {
+            var b=a.parentNode,c=b.parentNode;c.removeChild(b),updateMaterialsInLocalStorage(),updateTotalValue()
+        }
+
+        function saveMaterial(a,b,c) {
+            var d=JSON.parse(localStorage.getItem('materials'))||[];d.push({name:a,quantity:b,totalValue:c}),localStorage.setItem('materials',JSON.stringify(d))
+        }
+
+        function updateMaterialsInLocalStorage() {
+            var a=[],b=document.getElementById('list').getElementsByTagName('li');for(var c=0;c<b.length;c++){var d=b[c].textContent.split(' - '),e=d[0].split(':'),f=e[0].trim(),g=e[1].split(' ')[0].trim(),h=d[1].split('R$')[1].trim();a.push({name:f,quantity:g,totalValue:h})}localStorage.setItem('materials',JSON.stringify(a))
+        }
+
+        function updateTotalValue() {
+            var a=JSON.parse(localStorage.getItem('materials'))||[],b=0;a.forEach(function(a){b+=parseFloat(a.totalValue)}),document.getElementById('totalValue').textContent='Valor Total: R$'+b.toFixed(2)
+        }
+
+        window.onload=function(){var a=JSON.parse(localStorage.getItem('materials'))||[],b=document.getElementById('list');a.forEach(function(a){var c=document.createElement('li');c.innerHTML=a.name+': '+a.quantity+' unidades - Valor Total: R$'+a.totalValue+' <button onclick="deleteMaterial(this)">Excluir</button>',b.appendChild(c)}),updateTotalValue()}
+    </script>
+</body>
+</html>
